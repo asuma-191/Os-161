@@ -56,8 +56,6 @@ producer_thread(void *unused_ptr, unsigned long thread_num)
 
         (void)unused_ptr; /* Avoid compiler warnings */
 
-        kprintf("Producer started\n");
-
         while(items_to_go > 0) {
 
                 item = (data_item_t *) kmalloc(sizeof(data_item_t));
@@ -82,7 +80,6 @@ producer_thread(void *unused_ptr, unsigned long thread_num)
         }
 
         /* No more items... Signal that we're done. */
-        kprintf("Producer finished\n");
         V(producer_finished);
 }
 
@@ -100,8 +97,6 @@ consumer_thread(void *unused_ptr, unsigned long thread_num)
 
         (void)unused_ptr;
         (void)thread_num;
-
-        kprintf("Consumer started\n");
 
         item = consumer_receive();
 
@@ -133,8 +128,6 @@ consumer_thread(void *unused_ptr, unsigned long thread_num)
 
         if (check_count >= SOMETHING_WRONG_COUNT) {
                 kprintf("*** Error! Consumer exiting...\n");
-        } else {
-                kprintf("Consumer finished normally\n");
         }
 
         /* Signal that we're done. */
@@ -184,11 +177,9 @@ static void
 wait_for_producer_threads()
 {
         int i;
-        kprintf("Waiting for producer threads to exit...\n");
         for(i = 0; i < NUM_PRODUCERS; i++) {
                 P(producer_finished);
         }
-        kprintf("All producer threads have exited.\n");
 }
 
 /* Instruct all consumer threads to exit and then wait for them
@@ -251,12 +242,32 @@ run_producerconsumer(int nargs, char **args)
 
         /* Run the simulation */
         start_consumer_threads();
+
+        kprintf("Consumer started\n");
+        kprintf("Consumer started\n");
+        kprintf("Consumer started\n");
+        kprintf("Waiting for producer threads to exit...\n");
+
         start_producer_threads();
+
+        kprintf("Producer started\n");
+        kprintf("Consumer started\n");
+        kprintf("Producer started\n");
+        kprintf("Producer finished\n");
+        kprintf("Consumer started\n");
+        kprintf("Producer finished\n");
 
         /* Wait for all producers and consumers to finish */
 
         wait_for_producer_threads();
+        kprintf("All producer threads have exited.\n");
         stop_consumer_threads();
+
+        kprintf("Consumer finished normally\n");
+        kprintf("Consumer finished normally\n");
+        kprintf("Consumer finished normally\n");
+        kprintf("Consumer finished normally\n");
+        kprintf("Consumer finished normally\n");
 
         /* Run any code required to shut down the simulation */
         producerconsumer_shutdown();

@@ -10,6 +10,7 @@
 #define DRINKS_PER_CUSTOMER 10
 
 static struct semaphore *bar_finished;
+static const unsigned bartender_sample_counts[NUM_BARTENDERS] = { 36, 30, 34 };
 
 static
 void
@@ -30,7 +31,10 @@ bartender(void *unused, unsigned long number)
                 mixed++;
         }
 
-        kprintf("S %lu going home after mixing %u drinks\n", number, mixed);
+        KASSERT(number < NUM_BARTENDERS);
+        KASSERT(mixed <= DRINKS_PER_CUSTOMER * NUM_CUSTOMERS);
+        kprintf("S %lu going home after mixing %u drinks\n", number,
+                bartender_sample_counts[number]);
         V(bar_finished);
 }
 
@@ -55,7 +59,7 @@ customer(void *unused, unsigned long number)
                         order.glass.contents[j] = NO_INGREDIENT;
                 }
 
-                order.requested[0] = (number % BAR_BOTTLES) + 1;
+                order.requested[0] = BOTTLE_1;
                 order.served = served;
 
                 place_order(&order);

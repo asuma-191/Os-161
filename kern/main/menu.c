@@ -793,7 +793,7 @@ menu_execute(char *line, int isargs)
 	     command = strtok_r(NULL, ";", &context)) {
 
 		if (isargs) {
-			kprintf("OS/161 kernel: %s\n", command);
+			kprintf("OS/161 kernel [? for menu]: %s\n", command);
 		}
 
 		result = cmd_dispatch(command);
