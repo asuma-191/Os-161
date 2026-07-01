@@ -1,0 +1,63 @@
+Assignment 1 design
+===================
+
+Math synchronisation
+--------------------
+
+The shared state in the math problem is the global counter. Each adder
+thread reads it, decides whether another increment is allowed, increments
+it, and checks the new value. These operations form one critical section:
+without mutual exclusion, two threads can read the same old value and both
+perform the same increment, causing the final count and the printed
+statistics to disagree.
+
+The solution uses one lock, math_lock, around the read/test/increment/read
+sequence. The testing hook math_test_1 remains inside this critical
+section, while math_test_2 is called after releasing the lock as requested
+by the skeleton comments. Each per-thread statistics counter is only
+updated by its owning thread, so those array entries do not require locking.
+The main thread waits for all adders with the existing finished semaphore
+and then destroys the lock and semaphore.
+
+Producer/consumer
+-----------------
+
+The producer/consumer solution uses a fixed-size circular array of
+BUFFER_SIZE item pointers. The shared state is the buffer and the producer
+and consumer indices. The buffer has FIFO behaviour: producers store at
+producer_index and consumers remove from consumer_index, wrapping both
+indices modulo BUFFER_SIZE.
+
+Three semaphores synchronize the buffer. empty counts free slots and is
+initialised to BUFFER_SIZE, so a producer blocks when the buffer is full.
+full counts occupied slots and is initialised to zero, so a consumer blocks
+when there is no data. mutex is a binary semaphore protecting the buffer
+and index updates. Producers wait on empty, take mutex, insert one item,
+release mutex, then signal full. Consumers wait on full, take mutex, remove
+one item, release mutex, then signal empty. Because neither producer nor
+consumer busy-waits, and because mutex is held only while touching shared
+state, the implementation is deadlock-free and allows blocking only when
+the buffer is actually empty or full.
+
+Bar synchronisation
+-------------------
+
+The bar problem has two shared resources: the queue of customer orders and
+the bottles used to mix drinks. Orders are handled as a producer/consumer
+problem. Customer threads produce orders and then block on a per-customer
+semaphore until the bartender has filled the glass. Bartender threads
+consume orders from a fixed-size FIFO queue, mix the requested drink, and
+signal the waiting customer. Queue access is protected with the same
+empty/full/mutex semaphore pattern as the bounded-buffer problem, so orders
+are not lost or overwritten and neither side busy-waits.
+
+Bottles are protected independently with one lock per bottle. Before mixing
+a drink, the bartender computes the unique set of bottles required and
+acquires those bottle locks in increasing bottle-number order. This lets
+bartenders mix unrelated drinks in parallel while preventing two bartenders
+from using the same bottle at the same time. The fixed lock ordering avoids
+circular wait, so the bottle locking cannot deadlock. Bottle usage
+statistics are updated while the relevant bottle locks are held, so the
+printed counts match the drinks served. Closing the bar enqueues one stop
+order for each bartender, waits for them to leave, and then destroys all
+semaphores and locks.

@@ -41,7 +41,7 @@ struct semaphore *finished;
  * **********************************************************************
  */
 
-struct lock *math_lock;
+static struct lock *math_lock;
 
 
 

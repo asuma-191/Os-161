@@ -209,6 +209,10 @@ int twolocks (int data1, char ** data2)
         P(finished);
         P(finished);
 
+        lock_destroy(locka);
+        lock_destroy(lockb);
+        sem_destroy(finished);
+
         kprintf("Locking frenzy finished\n");
         return 0;
 }

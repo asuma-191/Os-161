@@ -37,6 +37,9 @@
 /* in threadstart.S */
 extern void mips_threadstart(/* arguments are in unusual registers */);
 
+/* Set by the MIPS linker script; initial value for the global pointer. */
+extern char _gp;
+
 
 /*
  * Function to initialize the switchframe of a new thread, which is
@@ -91,6 +94,7 @@ switchframe_init(struct thread *thread,
         sf->sf_s0 = (uint32_t)entrypoint;
         sf->sf_s1 = (uint32_t)data1;
         sf->sf_s2 = (uint32_t)data2;
+        sf->sf_gp = (uint32_t)&_gp;
         sf->sf_ra = (uint32_t)mips_threadstart;
 
         /* Set ->t_context, and we're done. */

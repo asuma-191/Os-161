@@ -39,6 +39,7 @@
 int twolocks(int, char **);
 int maths(int, char **);
 int run_producerconsumer(int, char **);
+int runbar(int, char **);
 #endif
 
 /*

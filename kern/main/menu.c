@@ -599,8 +599,8 @@ static const char *mainmenu[] = {
 	"[?t] Tests menu                     ",
 #if OPT_SYNCHPROBS
 	"[1a] Simple math synchronisation    ",
-	"[1b] Simple deadlock                ",
-	"[1c] Producer/consumer problem      ",
+	"[1b] Producer/consumer problem      ",
+	"[1c] Bar synchronisation            ",
 #endif
 	"[kh] Kernel heap stats              ",
 	"[khgen] Next kernel heap generation ",
@@ -655,8 +655,8 @@ static struct {
 #if OPT_SYNCHPROBS
 	/* in-kernel synchronization problem(s) */
 	{ "1a",     maths },
-	{ "1b",     twolocks },
-	{ "1c",     run_producerconsumer},
+	{ "1b",     run_producerconsumer},
+	{ "1c",     runbar},
 #endif
 
 	/* stats */

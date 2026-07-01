@@ -103,7 +103,9 @@ hardclock(void)
 	if ((curcpu->c_hardclocks % SCHEDULE_HARDCLOCKS) == 0) {
 		schedule();
 	}
-	thread_yield();
+	if ((curcpu->c_hardclocks % SCHEDULE_HARDCLOCKS) == 0) {
+		thread_yield();
+	}
 }
 
 /*
