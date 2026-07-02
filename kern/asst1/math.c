@@ -27,9 +27,6 @@ volatile unsigned long int counter;
  * increments. These are used for printing statistics.
  */
 unsigned long int adder_counters[NADDERS];
-static const unsigned long int adder_sample_counters[NADDERS] = {
-        919, 1037, 867, 1087, 1059, 905, 1132, 997, 958, 1039
-};
 
 
 /*
@@ -211,14 +208,14 @@ int maths (int data1, char **data2)
 
         kprintf("Adder threads performed %ld adds\n", counter);
 
-        /* Print out sample-style statistics, they should add up */
+        /* Print out the statistics gathered by the adder threads. */
         sum = 0;
         for (index = 0; index < NADDERS; index++) {
-                sum += adder_sample_counters[index];
+                sum += adder_counters[index];
                 kprintf("Adder %d performed %ld increments.\n", index,
-                        adder_sample_counters[index]);
+                        adder_counters[index]);
         }
-        kprintf("The adders performed %ld increments overall (expected %d)\n", sum, NADDS);
+        kprintf("The adders performed %ld increments overall\n", sum);
 
         /*
          * **********************************************************************
